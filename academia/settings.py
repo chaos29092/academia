@@ -15,9 +15,9 @@ SPIDER_MODULES = ['academia.spiders']
 NEWSPIDER_MODULE = 'academia.spiders'
 
 MONGO_URI = 'localhost'
-MONGO_DATABASE = 'academia_copy'
+MONGO_DATABASE = 'academia'
 
-LOG_FILE = 'article.log'
+LOG_FILE = 'all.log'
 LOG_LEVEL = 'INFO'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'academia (+http://www.yourdomain.com)'
@@ -26,14 +26,14 @@ LOG_LEVEL = 'INFO'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 150
+CONCURRENT_REQUESTS = 16
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 #DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -78,7 +78,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
-AUTOTHROTTLE_ENABLED = True
+# AUTOTHROTTLE_ENABLED = True
 # The initial download delay
 #AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies

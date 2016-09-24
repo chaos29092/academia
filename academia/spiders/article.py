@@ -42,7 +42,4 @@ class ArticleSpider(CrawlSpider):
             loader.add_value('created_at',json_body.get('created_at'))
             loader.add_value('crawl_date', time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time())))
 
-            papers = sel.xpath('.//span[@class="u-fw700"]/text()').extract_first()
-            loader.add_value('papers',papers)
-
             yield loader.load_item()

@@ -26,8 +26,11 @@ class MongoChemistryArticlePipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert(dict(item))
-        return item
+        try:
+            self.db[self.collection_name].insert(dict(item))
+            return item
+        finally:
+            return item
 
 class MongoChemistryBookPipeline(object):
 
@@ -52,12 +55,15 @@ class MongoChemistryBookPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert(dict(item))
-        return item
+        try:
+            self.db[self.collection_name].insert(dict(item))
+            return item
+        finally:
+            return item
 
-class MongoUrlPipeline(object):
+class MongoPeoplePipeline(object):
 
-    collection_name = 'url_filter'
+    collection_name = 'test'
 
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
@@ -78,8 +84,11 @@ class MongoUrlPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert(dict(item))
-        return item
+        try:
+            self.db[self.collection_name].insert(dict(item))
+            return item
+        finally:
+            return item
 
 # 转为中文并存储在json中
 class JsonWithEncodingPipeline(object):
