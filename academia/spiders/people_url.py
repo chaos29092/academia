@@ -10,25 +10,24 @@ import json
 import re
 
 
-class PeopleSpider(CrawlSpider):
-    name = "people"
+class PeopleUrlSpider(CrawlSpider):
+    name = "people_url"
     allowed_domains = ["academia.edu"]
     start_urls = (
         'http://www.academia.edu/Directory/People/0..1336335',
     )
     custom_settings = {
         'ITEM_PIPELINES':{
-            'academia.pipelines.MongoPeoplePipeline': 300,
+            'academia.pipelines.MongoPeopleUrlPipeline': 300,
             },
     }
 
     rules = (
-        Rule(LinkExtractor(allow=('/Directory/People'), restrict_xpaths=("//li[@class='col-xs-12 col-sm-6 col-md-4 text-truncate']/a")),follow=True),
-        Rule(LinkExtractor(deny=('/Directory/'), restrict_xpaths=("//li[@class='col-xs-12 col-sm-6 col-md-4 text-truncate']/a")),callback='parse_item'),
+        Rule(LinkExtractor(allow=('/Directory/People'), restrict_xpaths=("//li[@class='col-xs-12 col-sm-6 col-md-4 text-truncate']/a")),follow=True,callback='parse_url'),
 
     )
 
-    def parse_item(self, response):
+    def parse_url(self, response):
         # extract user id,create url
         js = response.xpath('//div[@id="content"]/script/text()').extract_first()
         m=re.split(r'\)\;\n',js)

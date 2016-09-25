@@ -26,13 +26,14 @@ class FirstItem(scrapy.Item):
 
 
 class PeopleItem(scrapy.Item):
+    user_id = Field(output_processor=TakeFirst())
     first_name = Field(output_processor=TakeFirst())
     last_name = Field(output_processor=TakeFirst())
     display_name = Field(output_processor=TakeFirst())
     url = Field(output_processor=TakeFirst())
     department = Field(output_processor=TakeFirst())
     position = Field(output_processor=TakeFirst())
-    interests = Field()
     created_at = Field(output_processor=TakeFirst())
-    social = Field()
     email = Field(output_processor=TakeFirst())
+    interests = Field()
+    social = Field()
