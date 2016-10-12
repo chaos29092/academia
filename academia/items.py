@@ -37,3 +37,6 @@ class PeopleItem(scrapy.Item):
     email = Field(output_processor=TakeFirst())
     interests = Field()
     social = Field()
+
+class PeopleUrlItem(scrapy.Item):
+    people_url = Field(output_processor=TakeFirst())

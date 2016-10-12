@@ -8,38 +8,52 @@ from scrapy.loader import ItemLoader
 from academia.items import PeopleItem
 import json
 import re
+from pymongo import MongoClient
+
+client = MongoClient()
+db = client.academia
 
 
 class PeopleSpider(CrawlSpider):
     name = "people"
     allowed_domains = ["academia.edu"]
-    start_urls = (
-        'http://www.academia.edu/Directory/People/0..1336335',
-    )
+
+    url_list = []
+    for l in db.url_1.find(limit=10000):
+        url_list.append(l['people_url'])
+    start_urls = (url_list)
+
     custom_settings = {
         'ITEM_PIPELINES':{
             'academia.pipelines.MongoPeoplePipeline': 300,
             },
     }
 
-    rules = (
-        Rule(LinkExtractor(allow=('/Directory/People'), restrict_xpaths=("//li[@class='col-xs-12 col-sm-6 col-md-4 text-truncate']/a")),follow=True),
-        Rule(LinkExtractor(deny=('/Directory/'), restrict_xpaths=("//li[@class='col-xs-12 col-sm-6 col-md-4 text-truncate']/a")),callback='parse_item'),
+    # rules = (
+    #     Rule(LinkExtractor(allow=('/Directory/People'), restrict_xpaths=("//li[@class='col-xs-12 col-sm-6 col-md-4 text-truncate']/a")),follow=True),
+    #     Rule(LinkExtractor(deny=('/Directory/'), restrict_xpaths=("//li[@class='col-xs-12 col-sm-6 col-md-4 text-truncate']/a")),callback='parse_item'),
+    # )
 
-    )
+    def parse_start_url(self, response):
+        return self.parse_item(response)
 
     def parse_item(self, response):
         # extract user id,create url
-        js = response.xpath('//div[@id="content"]/script/text()').extract_first()
-        m=re.split(r'\)\;\n',js)
-        user = m[0][35:]
-        social = m[2][21:]
-        json_body = json.loads(user)
-        user_id = json_body.get('id')
-        user_domain = json_body.get('domain_name')
-        url = 'http://'+user_domain+'.academia.edu/v0/users/'+str(user_id)+'/details?subdomain_param=api'
+        try:
+            js = response.xpath('//div[@id="content"]/script/text()').extract_first()
+            m=re.split(r'\)\;\n',js)
+            user = m[0][35:]
+            social = m[2][21:]
+            json_body = json.loads(user)
+            user_id = json_body.get('id')
+            user_domain = json_body.get('domain_name')
+            url = 'http://'+user_domain+'.academia.edu/v0/users/'+str(user_id)+'/details?subdomain_param=api'
 
-        yield scrapy.Request(url=url,callback=self.parse_email,meta={'user':user,'social':social})
+            yield scrapy.Request(url=url,callback=self.parse_email,meta={'user':user,'social':social})
+
+        finally:
+            url = db.url_1.find_one_and_delete({"_id":db.url_1.find_one()['_id']})
+            yield scrapy.Request(url=url['people_url'], callback=self.parse_item)
 
     def parse_email(self,response):
         user = response.meta['user']
@@ -65,5 +79,7 @@ class PeopleSpider(CrawlSpider):
             social=json.loads(social)
             loader.add_value('social',social)
         finally:
-            return loader.load_item()
+            yield loader.load_item()
+
+
 
